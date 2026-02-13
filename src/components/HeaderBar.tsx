@@ -5,6 +5,7 @@ type HeaderBarProps = {
   round: number;
   activeLabel: string;
   activeType: CombatantType | null;
+  activeIsDown: boolean;
   encounterName: string;
   onEncounterNameChange: (value: string) => void;
   onPreviousTurn: () => void;
@@ -18,6 +19,7 @@ export default function HeaderBar({
   round,
   activeLabel,
   activeType,
+  activeIsDown,
   encounterName,
   onEncounterNameChange,
   onPreviousTurn,
@@ -29,8 +31,9 @@ export default function HeaderBar({
   const handleEncounterNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     onEncounterNameChange(event.target.value);
   };
-  const activePillClass =
-    activeType === "monster"
+  const activePillClass = activeIsDown
+    ? "bg-stone-800 text-stone-200"
+    : activeType === "monster"
       ? "bg-rose-900/70 text-rose-200"
       : activeType === "npc"
         ? "bg-amber-900/70 text-amber-200"

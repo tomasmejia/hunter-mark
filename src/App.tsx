@@ -129,6 +129,7 @@ export default function App() {
           round={activeEncounter.round}
           activeLabel={activeLabel}
           activeType={activeCombatant?.type ?? null}
+          activeIsDown={(activeCombatant?.currentHp ?? 1) <= 0}
           encounterName={encounterName}
           onEncounterNameChange={setEncounterName}
           onPreviousTurn={() => void previousTurn()}

@@ -182,7 +182,9 @@ export default function InitiativeList({
               key={combatant.id}
               className={`grid gap-2 rounded-md border p-3 md:grid-cols-12 ${
                 combatant.id === activeCombatantId
-                  ? combatant.type === "monster"
+                  ? combatant.currentHp <= 0
+                    ? "border-stone-500 bg-stone-900/40"
+                    : combatant.type === "monster"
                     ? "border-rose-500 bg-rose-950/40"
                     : combatant.type === "npc"
                       ? "border-amber-500 bg-amber-950/40"
@@ -205,6 +207,7 @@ export default function InitiativeList({
                     }`}
                   >
                     {combatant.name}
+                    {combatant.currentHp <= 0 ? " 💀" : ""}
                   </a>
                 ) : (
                   <p
@@ -217,6 +220,7 @@ export default function InitiativeList({
                     }`}
                   >
                     {combatant.name}
+                    {combatant.currentHp <= 0 ? " 💀" : ""}
                   </p>
                 )}
                 <div className="relative">
