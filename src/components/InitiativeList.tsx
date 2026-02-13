@@ -7,6 +7,7 @@ type InitiativeListProps = {
   onUpdateHp: (combatantId: string, delta: number) => void;
   onSetCurrentHp: (combatantId: string, nextHp: number) => void;
   onSetMaxHp: (combatantId: string, nextHp: number) => void;
+  onSetAc: (combatantId: string, nextAc: number) => void;
   onDuplicateCombatant: (combatantId: string) => void;
   onDeleteCombatant: (combatantId: string) => void;
 };
@@ -17,15 +18,24 @@ export default function InitiativeList({
   onUpdateHp,
   onSetCurrentHp,
   onSetMaxHp,
+  onSetAc,
   onDuplicateCombatant,
   onDeleteCombatant,
 }: InitiativeListProps) {
-  const [editing, setEditing] = useState<{ combatantId: string; field: "current" | "max" } | null>(null);
+  const [editing, setEditing] = useState<{ combatantId: string; field: "current" | "max" | "ac" } | null>(null);
   const [draftHp, setDraftHp] = useState("");
 
-  const startEditing = (combatant: Combatant, field: "current" | "max") => {
+  const startEditing = (combatant: Combatant, field: "current" | "max" | "ac") => {
     setEditing({ combatantId: combatant.id, field });
-    setDraftHp(String(field === "current" ? combatant.currentHp : combatant.maxHp));
+    if (field === "current") {
+      setDraftHp(String(combatant.currentHp));
+      return;
+    }
+    if (field === "max") {
+      setDraftHp(String(combatant.maxHp));
+      return;
+    }
+    setDraftHp(String(combatant.ac));
   };
 
   const stopEditing = () => {
@@ -39,7 +49,9 @@ export default function InitiativeList({
       stopEditing();
       return;
     }
-    if (editing?.field === "max") {
+    if (editing?.field === "ac") {
+      onSetAc(combatant.id, parsed);
+    } else if (editing?.field === "max") {
       onSetMaxHp(combatant.id, parsed);
     } else {
       onSetCurrentHp(combatant.id, parsed);
@@ -66,7 +78,35 @@ export default function InitiativeList({
               <div className="md:col-span-4">
                 <p className="font-semibold">{combatant.name}</p>
                 <p className="text-xs uppercase text-slate-400">
-                  {combatant.type} | AC {combatant.ac} | Init {combatant.initiative}
+                  {combatant.type} | AC{" "}
+                  {editing?.combatantId === combatant.id && editing.field === "ac" ? (
+                    <input
+                      type="number"
+                      min={0}
+                      value={draftHp}
+                      autoFocus
+                      className="h-6 w-14 rounded border border-slate-700 bg-slate-950 px-1 text-center text-xs text-slate-100 normal-case"
+                      onChange={(event) => setDraftHp(event.target.value)}
+                      onBlur={stopEditing}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          saveEditedHp(combatant);
+                        }
+                        if (event.key === "Escape") {
+                          stopEditing();
+                        }
+                      }}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => startEditing(combatant, "ac")}
+                      className="rounded px-1 text-xs text-slate-100 underline decoration-dotted underline-offset-2 normal-case hover:text-slate-300"
+                    >
+                      {combatant.ac}
+                    </button>
+                  )}{" "}
+                  | Init {combatant.initiative}
                 </p>
               </div>
               <div className="md:col-span-5 flex items-center gap-2">

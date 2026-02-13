@@ -46,6 +46,7 @@ export default function App() {
     updateHp,
     setCurrentHp,
     setMaxHp,
+    setAc,
     nextTurn,
     saveActiveEncounter,
     loadEncounter,
@@ -58,8 +59,8 @@ export default function App() {
   const nameInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    void init();
-  }, [init]);
+    init();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("hm-active-encounter", JSON.stringify(activeEncounter));
@@ -95,7 +96,7 @@ export default function App() {
         { saveToLibrary: form.saveToLibrary }
       );
     }
-
+ 
     setForm((prev) => ({ ...prev, name: "" }));
     nameInputRef.current?.focus();
   };
@@ -137,6 +138,7 @@ export default function App() {
           onUpdateHp={(combatantId, delta) => void updateHp(combatantId, delta)}
           onSetCurrentHp={(combatantId, nextHp) => void setCurrentHp(combatantId, nextHp)}
           onSetMaxHp={(combatantId, nextHp) => void setMaxHp(combatantId, nextHp)}
+          onSetAc={(combatantId, nextAc) => void setAc(combatantId, nextAc)}
           onDuplicateCombatant={(combatantId) => void duplicateCombatant(combatantId)}
           onDeleteCombatant={(combatantId) => void deleteCombatant(combatantId)}
         />

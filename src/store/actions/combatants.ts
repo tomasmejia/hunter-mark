@@ -15,6 +15,7 @@ export const createCombatantActions = (
   | "updateHp"
   | "setCurrentHp"
   | "setMaxHp"
+  | "setAc"
 > => ({
   addCombatant: async (input, options) => {
     const current = get().activeEncounter;
@@ -180,6 +181,28 @@ export const createCombatantActions = (
         ...combatant,
         maxHp: clampedMaxHp,
         currentHp: Math.min(combatant.currentHp, clampedMaxHp),
+        updatedAt: nowIso(),
+      };
+    });
+
+    const nextEncounter: Encounter = {
+      ...current,
+      combatants: nextCombatants,
+      updatedAt: nowIso(),
+    };
+    set({ activeEncounter: nextEncounter });
+    await persistEncounter(nextEncounter);
+  },
+
+  setAc: async (combatantId, nextAc) => {
+    const current = get().activeEncounter;
+    const nextCombatants = current.combatants.map((combatant) => {
+      if (combatant.id !== combatantId) {
+        return combatant;
+      }
+      return {
+        ...combatant,
+        ac: Math.max(0, Math.floor(nextAc)),
         updatedAt: nowIso(),
       };
     });

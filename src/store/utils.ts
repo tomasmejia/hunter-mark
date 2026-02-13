@@ -48,6 +48,7 @@ export const readDraftEncounter = (): Encounter | null => {
     }
     return JSON.parse(raw) as Encounter;
   } catch {
+    // idc about catching errors rn
     return null;
   }
 };
