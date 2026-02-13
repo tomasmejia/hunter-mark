@@ -242,7 +242,7 @@ export default function InitiativeList({
                     >
                       {combatant.ac}
                     </button>
-                  )}{" "}
+                  )}
                   | Init {combatant.initiative}
                 </p>
               </div>

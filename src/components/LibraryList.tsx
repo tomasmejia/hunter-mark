@@ -28,7 +28,7 @@ export default function LibraryList({
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{combatant.name}</p>
                 <p className="text-xs uppercase text-slate-400">
-                  {combatant.type} | HP {combatant.currentHp}/{combatant.maxHp} | AC {combatant.ac} | Init {" "}
+                  {combatant.type} | HP {combatant.currentHp}/{combatant.maxHp} | AC {combatant.ac} | Init
                   {combatant.initiative}
                 </p>
               </div>
