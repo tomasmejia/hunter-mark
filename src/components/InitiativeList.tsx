@@ -6,6 +6,7 @@ type InitiativeListProps = {
   activeCombatantId: string | null;
   onUpdateHp: (combatantId: string, delta: number) => void;
   onSetCurrentHp: (combatantId: string, nextHp: number) => void;
+  onSetMaxHp: (combatantId: string, nextHp: number) => void;
   onDuplicateCombatant: (combatantId: string) => void;
   onDeleteCombatant: (combatantId: string) => void;
 };
@@ -15,19 +16,20 @@ export default function InitiativeList({
   activeCombatantId,
   onUpdateHp,
   onSetCurrentHp,
+  onSetMaxHp,
   onDuplicateCombatant,
   onDeleteCombatant,
 }: InitiativeListProps) {
-  const [editingCombatantId, setEditingCombatantId] = useState<string | null>(null);
+  const [editing, setEditing] = useState<{ combatantId: string; field: "current" | "max" } | null>(null);
   const [draftHp, setDraftHp] = useState("");
 
-  const startEditing = (combatant: Combatant) => {
-    setEditingCombatantId(combatant.id);
-    setDraftHp(String(combatant.currentHp));
+  const startEditing = (combatant: Combatant, field: "current" | "max") => {
+    setEditing({ combatantId: combatant.id, field });
+    setDraftHp(String(field === "current" ? combatant.currentHp : combatant.maxHp));
   };
 
   const stopEditing = () => {
-    setEditingCombatantId(null);
+    setEditing(null);
     setDraftHp("");
   };
 
@@ -37,7 +39,11 @@ export default function InitiativeList({
       stopEditing();
       return;
     }
-    onSetCurrentHp(combatant.id, parsed);
+    if (editing?.field === "max") {
+      onSetMaxHp(combatant.id, parsed);
+    } else {
+      onSetCurrentHp(combatant.id, parsed);
+    }
     stopEditing();
   };
 
@@ -80,7 +86,7 @@ export default function InitiativeList({
                 </button>
                 <div className="flex items-center gap-1 text-sm">
                   <span>HP</span>
-                  {editingCombatantId === combatant.id ? (
+                  {editing?.combatantId === combatant.id && editing.field === "current" ? (
                     <input
                       type="number"
                       min={0}
@@ -102,13 +108,40 @@ export default function InitiativeList({
                   ) : (
                     <button
                       type="button"
-                      onClick={() => startEditing(combatant)}
+                      onClick={() => startEditing(combatant, "current")}
                       className="rounded px-1 text-sm text-slate-100 underline decoration-dotted underline-offset-2 hover:text-slate-300"
                     >
                       {combatant.currentHp}
                     </button>
                   )}
-                  <span>/ {combatant.maxHp}</span>
+                  <span>/</span>
+                  {editing?.combatantId === combatant.id && editing.field === "max" ? (
+                    <input
+                      type="number"
+                      min={1}
+                      value={draftHp}
+                      autoFocus
+                      className="h-8 w-16 rounded border border-slate-700 bg-slate-950 px-1 text-center text-sm"
+                      onChange={(event) => setDraftHp(event.target.value)}
+                      onBlur={stopEditing}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          saveEditedHp(combatant);
+                        }
+                        if (event.key === "Escape") {
+                          stopEditing();
+                        }
+                      }}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => startEditing(combatant, "max")}
+                      className="rounded px-1 text-sm text-slate-100 underline decoration-dotted underline-offset-2 hover:text-slate-300"
+                    >
+                      {combatant.maxHp}
+                    </button>
+                  )}
                 </div>
                 <button
                   type="button"
