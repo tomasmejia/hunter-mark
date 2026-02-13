@@ -5,6 +5,8 @@ type HeaderBarProps = {
   activeLabel: string;
   encounterName: string;
   onEncounterNameChange: (value: string) => void;
+  onPreviousTurn: () => void;
+  isPreviousTurnDisabled: boolean;
   onNextTurn: () => void;
   onCreateEncounter: () => void;
   onSaveEncounter: () => void;
@@ -15,6 +17,8 @@ export default function HeaderBar({
   activeLabel,
   encounterName,
   onEncounterNameChange,
+  onPreviousTurn,
+  isPreviousTurnDisabled,
   onNextTurn,
   onCreateEncounter,
   onSaveEncounter,
@@ -31,8 +35,16 @@ export default function HeaderBar({
         <span className="text-xs rounded-full bg-slate-800 px-2 py-1">Active: {activeLabel}</span>
         <button
           type="button"
+          onClick={onPreviousTurn}
+          disabled={isPreviousTurnDisabled}
+          className="ml-auto rounded-md bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-slate-700"
+        >
+          Previous Turn
+        </button>
+        <button
+          type="button"
           onClick={onNextTurn}
-          className="ml-auto rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold hover:bg-emerald-500"
+          className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold hover:bg-emerald-500"
         >
           Next Turn
         </button>

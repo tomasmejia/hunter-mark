@@ -15,7 +15,13 @@ export const createEncounterActions = (
   get: StoreGet
 ): Pick<
   AppStore,
-  "init" | "createEncounter" | "nextTurn" | "saveActiveEncounter" | "loadEncounter" | "deleteEncounter"
+  | "init"
+  | "createEncounter"
+  | "previousTurn"
+  | "nextTurn"
+  | "saveActiveEncounter"
+  | "loadEncounter"
+  | "deleteEncounter"
 > => ({
   init: async () => {
     set({ loading: true });
@@ -37,6 +43,31 @@ export const createEncounterActions = (
 
   createEncounter: () => {
     set({ activeEncounter: blankEncounter() });
+  },
+
+  previousTurn: async () => {
+    const current = get().activeEncounter;
+    const ordered = sortByInitiativeDesc(current.combatants);
+    if (ordered.length === 0) {
+      return;
+    }
+
+    const activeId = current.activeCombatantId ?? ordered[0].id;
+    const currentIndex = ordered.findIndex((c) => c.id === activeId);
+    const safeCurrentIndex = currentIndex === -1 ? 0 : currentIndex;
+    const previousIndex = (safeCurrentIndex - 1 + ordered.length) % ordered.length;
+    const wrappedToLast = safeCurrentIndex === 0 && ordered.length > 0;
+    const nextRound = wrappedToLast ? Math.max(1, current.round - 1) : current.round;
+
+    const nextEncounter: Encounter = {
+      ...current,
+      round: nextRound,
+      activeCombatantId: ordered[previousIndex].id,
+      updatedAt: nowIso(),
+    };
+
+    set({ activeEncounter: nextEncounter });
+    await persistEncounter(nextEncounter);
   },
 
   nextTurn: async () => {

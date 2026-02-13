@@ -47,6 +47,7 @@ export default function App() {
     setCurrentHp,
     setMaxHp,
     setAc,
+    previousTurn,
     nextTurn,
     saveActiveEncounter,
     loadEncounter,
@@ -103,6 +104,10 @@ export default function App() {
 
   const activeLabel =
     orderedCombatants.find((combatant) => combatant.id === activeEncounter.activeCombatantId)?.name ?? "None";
+  const firstInitiativeCombatantId = orderedCombatants[0]?.id ?? null;
+  const isPreviousTurnDisabled =
+    orderedCombatants.length === 0 ||
+    (activeEncounter.round === 1 && activeEncounter.activeCombatantId === firstInitiativeCombatantId);
 
   if (loading) {
     return (
@@ -120,6 +125,8 @@ export default function App() {
           activeLabel={activeLabel}
           encounterName={encounterName}
           onEncounterNameChange={setEncounterName}
+          onPreviousTurn={() => void previousTurn()}
+          isPreviousTurnDisabled={isPreviousTurnDisabled}
           onNextTurn={() => void nextTurn()}
           onCreateEncounter={createEncounter}
           onSaveEncounter={() => void saveActiveEncounter(encounterName)}
