@@ -10,6 +10,7 @@ export const createCombatantActions = (
   AppStore,
   | "addCombatant"
   | "addCombatantFromLibrary"
+  | "saveCombatantToLibrary"
   | "duplicateCombatant"
   | "deleteCombatant"
   | "updateHp"
@@ -78,6 +79,25 @@ export const createCombatantActions = (
 
     set({ activeEncounter: nextEncounter });
     await persistEncounter(nextEncounter);
+  },
+
+  saveCombatantToLibrary: async (combatantId) => {
+    const combatant = get().activeEncounter.combatants.find((item) => item.id === combatantId);
+    if (!combatant) {
+      return;
+    }
+
+    const timestamp = nowIso();
+    const libraryCombatant: Combatant = {
+      ...combatant,
+      id: makeId(),
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    };
+
+    await db.combatants.put(libraryCombatant);
+    const libraryCombatants = await db.combatants.orderBy("name").toArray();
+    set({ libraryCombatants });
   },
 
   duplicateCombatant: async (combatantId, count = 1) => {

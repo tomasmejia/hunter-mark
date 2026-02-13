@@ -17,6 +17,7 @@ export type AppStoreActions = {
   createEncounter: () => void;
   addCombatant: (input: NewCombatantInput, options?: AddCombatantOptions) => Promise<void>;
   addCombatantFromLibrary: (combatantId: string) => Promise<void>;
+  saveCombatantToLibrary: (combatantId: string) => Promise<void>;
   duplicateCombatant: (combatantId: string, count?: number) => Promise<void>;
   deleteCombatant: (combatantId: string) => Promise<void>;
   updateHp: (combatantId: string, delta: number) => Promise<void>;

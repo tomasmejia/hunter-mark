@@ -10,6 +10,7 @@ type InitiativeListProps = {
   onSetAc: (combatantId: string, nextAc: number) => void;
   onSetInitiative: (combatantId: string, nextInitiative: number) => void;
   onSetStatBlockUrl: (combatantId: string, url?: string) => void;
+  onSaveCombatantToLibrary: (combatantId: string) => void;
   onDuplicateCombatant: (combatantId: string) => void;
   onDeleteCombatant: (combatantId: string) => void;
 };
@@ -23,6 +24,7 @@ export default function InitiativeList({
   onSetAc,
   onSetInitiative,
   onSetStatBlockUrl,
+  onSaveCombatantToLibrary,
   onDuplicateCombatant,
   onDeleteCombatant,
 }: InitiativeListProps) {
@@ -418,6 +420,13 @@ export default function InitiativeList({
                 </div>
               </div>
               <div className="md:col-span-3 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => onSaveCombatantToLibrary(combatant.id)}
+                  className="rounded bg-indigo-700 px-3 py-2 text-sm hover:bg-indigo-600"
+                >
+                  Save
+                </button>
                 <button
                   type="button"
                   onClick={() => onDuplicateCombatant(combatant.id)}

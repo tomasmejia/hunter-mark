@@ -41,6 +41,7 @@ export default function App() {
     createEncounter,
     addCombatant,
     addCombatantFromLibrary,
+    saveCombatantToLibrary,
     duplicateCombatant,
     deleteCombatant,
     updateHp,
@@ -153,6 +154,7 @@ export default function App() {
           onSetAc={(combatantId, nextAc) => void setAc(combatantId, nextAc)}
           onSetInitiative={(combatantId, nextInitiative) => void setInitiative(combatantId, nextInitiative)}
           onSetStatBlockUrl={(combatantId, url) => void setStatBlockUrl(combatantId, url)}
+          onSaveCombatantToLibrary={(combatantId) => void saveCombatantToLibrary(combatantId)}
           onDuplicateCombatant={(combatantId) => void duplicateCombatant(combatantId)}
           onDeleteCombatant={(combatantId) => void deleteCombatant(combatantId)}
         />
