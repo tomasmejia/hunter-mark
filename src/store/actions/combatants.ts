@@ -16,6 +16,7 @@ export const createCombatantActions = (
   | "setCurrentHp"
   | "setMaxHp"
   | "setAc"
+  | "setStatBlockUrl"
 > => ({
   addCombatant: async (input, options) => {
     const current = get().activeEncounter;
@@ -24,6 +25,7 @@ export const createCombatantActions = (
       id: makeId(),
       name: input.name.trim(),
       type: input.type,
+      statBlockUrl: input.statBlockUrl,
       maxHp: input.maxHp,
       currentHp: input.currentHp,
       ac: input.ac,
@@ -203,6 +205,28 @@ export const createCombatantActions = (
       return {
         ...combatant,
         ac: Math.max(0, Math.floor(nextAc)),
+        updatedAt: nowIso(),
+      };
+    });
+
+    const nextEncounter: Encounter = {
+      ...current,
+      combatants: nextCombatants,
+      updatedAt: nowIso(),
+    };
+    set({ activeEncounter: nextEncounter });
+    await persistEncounter(nextEncounter);
+  },
+
+  setStatBlockUrl: async (combatantId, url) => {
+    const current = get().activeEncounter;
+    const nextCombatants = current.combatants.map((combatant) => {
+      if (combatant.id !== combatantId) {
+        return combatant;
+      }
+      return {
+        ...combatant,
+        statBlockUrl: url?.trim() ? url.trim() : undefined,
         updatedAt: nowIso(),
       };
     });

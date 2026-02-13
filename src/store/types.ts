@@ -23,6 +23,7 @@ export type AppStoreActions = {
   setCurrentHp: (combatantId: string, nextHp: number) => Promise<void>;
   setMaxHp: (combatantId: string, nextHp: number) => Promise<void>;
   setAc: (combatantId: string, nextAc: number) => Promise<void>;
+  setStatBlockUrl: (combatantId: string, url?: string) => Promise<void>;
   previousTurn: () => Promise<void>;
   nextTurn: () => Promise<void>;
   saveActiveEncounter: (name?: string) => Promise<void>;

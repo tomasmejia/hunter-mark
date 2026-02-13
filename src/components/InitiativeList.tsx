@@ -4,10 +4,10 @@ import type { Combatant } from "../types";
 type InitiativeListProps = {
   combatants: Combatant[];
   activeCombatantId: string | null;
-  onUpdateHp: (combatantId: string, delta: number) => void;
   onSetCurrentHp: (combatantId: string, nextHp: number) => void;
   onSetMaxHp: (combatantId: string, nextHp: number) => void;
   onSetAc: (combatantId: string, nextAc: number) => void;
+  onSetStatBlockUrl: (combatantId: string, url?: string) => void;
   onDuplicateCombatant: (combatantId: string) => void;
   onDeleteCombatant: (combatantId: string) => void;
 };
@@ -15,40 +15,60 @@ type InitiativeListProps = {
 export default function InitiativeList({
   combatants,
   activeCombatantId,
-  onUpdateHp,
   onSetCurrentHp,
   onSetMaxHp,
   onSetAc,
+  onSetStatBlockUrl,
   onDuplicateCombatant,
   onDeleteCombatant,
 }: InitiativeListProps) {
-  const [editing, setEditing] = useState<{ combatantId: string; field: "current" | "max" | "ac" } | null>(null);
-  const [draftHp, setDraftHp] = useState("");
+  const [editing, setEditing] = useState<{ combatantId: string; field: "current" | "max" | "ac" | "url" } | null>(
+    null
+  );
+  const [draftValue, setDraftValue] = useState("");
 
-  const startEditing = (combatant: Combatant, field: "current" | "max" | "ac") => {
+  const startEditing = (combatant: Combatant, field: "current" | "max" | "ac" | "url") => {
     setEditing({ combatantId: combatant.id, field });
     if (field === "current") {
-      setDraftHp(String(combatant.currentHp));
+      setDraftValue(String(combatant.currentHp));
       return;
     }
     if (field === "max") {
-      setDraftHp(String(combatant.maxHp));
+      setDraftValue(String(combatant.maxHp));
       return;
     }
-    setDraftHp(String(combatant.ac));
+    if (field === "ac") {
+      setDraftValue(String(combatant.ac));
+      return;
+    }
+    setDraftValue(combatant.statBlockUrl ?? "");
   };
 
   const stopEditing = () => {
     setEditing(null);
-    setDraftHp("");
+    setDraftValue("");
   };
 
-  const saveEditedHp = (combatant: Combatant) => {
-    const parsed = Number(draftHp);
+  const saveEditedField = (combatant: Combatant) => {
+    if (editing?.field === "url") {
+      const trimmed = draftValue.trim();
+      if (!trimmed) {
+        onSetStatBlockUrl(combatant.id, undefined);
+        stopEditing();
+        return;
+      }
+      const normalized = /^(https?:\/\/)/i.test(trimmed) ? trimmed : `https://${trimmed}`;
+      onSetStatBlockUrl(combatant.id, normalized);
+      stopEditing();
+      return;
+    }
+
+    const parsed = Number(draftValue);
     if (!Number.isFinite(parsed)) {
       stopEditing();
       return;
     }
+
     if (editing?.field === "ac") {
       onSetAc(combatant.id, parsed);
     } else if (editing?.field === "max") {
@@ -76,21 +96,75 @@ export default function InitiativeList({
               }`}
             >
               <div className="md:col-span-4">
-                <p className="font-semibold">{combatant.name}</p>
+                {combatant.statBlockUrl ? (
+                  <a
+                    href={combatant.statBlockUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className={`font-semibold hover:underline ${
+                      combatant.type === "monster"
+                        ? "text-rose-300 hover:text-rose-200"
+                        : combatant.type === "player"
+                          ? "text-emerald-300 hover:text-emerald-200"
+                        : "text-amber-300 hover:text-amber-200"
+                    }`}
+                  >
+                    {combatant.name}
+                  </a>
+                ) : (
+                  <p
+                    className={`font-semibold ${
+                      combatant.type === "player"
+                        ? "text-emerald-300"
+                        : combatant.type === "npc"
+                          ? "text-amber-300"
+                          : "text-rose-300"
+                    }`}
+                  >
+                    {combatant.name}
+                  </p>
+                )}
                 <p className="text-xs uppercase text-slate-400">
-                  {combatant.type} | AC{" "}
+                  {editing?.combatantId === combatant.id && editing.field === "url" ? (
+                    <input
+                      type="url"
+                      value={draftValue}
+                      autoFocus
+                      placeholder="https://..."
+                      className="h-6 w-36 rounded border border-slate-700 bg-slate-950 px-1 text-xs text-slate-100 normal-case"
+                      onChange={(event) => setDraftValue(event.target.value)}
+                      onBlur={stopEditing}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          saveEditedField(combatant);
+                        }
+                        if (event.key === "Escape") {
+                          stopEditing();
+                        }
+                      }}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => startEditing(combatant, "url")}
+                      className="rounded text-xs text-slate-100 underline decoration-dotted underline-offset-2 normal-case hover:text-slate-300"
+                    >
+                      {combatant.type.toUpperCase()}
+                    </button>
+                  )}{" "}
+                  | AC{" "}
                   {editing?.combatantId === combatant.id && editing.field === "ac" ? (
                     <input
                       type="number"
                       min={0}
-                      value={draftHp}
+                      value={draftValue}
                       autoFocus
                       className="h-6 w-14 rounded border border-slate-700 bg-slate-950 px-1 text-center text-xs text-slate-100 normal-case"
-                      onChange={(event) => setDraftHp(event.target.value)}
+                      onChange={(event) => setDraftValue(event.target.value)}
                       onBlur={stopEditing}
                       onKeyDown={(event) => {
                         if (event.key === "Enter") {
-                          saveEditedHp(combatant);
+                          saveEditedField(combatant);
                         }
                         if (event.key === "Escape") {
                           stopEditing();
@@ -110,20 +184,6 @@ export default function InitiativeList({
                 </p>
               </div>
               <div className="md:col-span-5 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => onUpdateHp(combatant.id, -5)}
-                  className="rounded bg-rose-700 px-2 py-1 text-sm hover:bg-rose-600"
-                >
-                  -5
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onUpdateHp(combatant.id, -1)}
-                  className="rounded bg-rose-700 px-2 py-1 text-sm hover:bg-rose-600"
-                >
-                  -1
-                </button>
                 <div className="flex items-center gap-1 text-sm">
                   <span>HP</span>
                   {editing?.combatantId === combatant.id && editing.field === "current" ? (
@@ -131,14 +191,14 @@ export default function InitiativeList({
                       type="number"
                       min={0}
                       max={combatant.maxHp}
-                      value={draftHp}
+                      value={draftValue}
                       autoFocus
                       className="h-8 w-16 rounded border border-slate-700 bg-slate-950 px-1 text-center text-sm"
-                      onChange={(event) => setDraftHp(event.target.value)}
+                      onChange={(event) => setDraftValue(event.target.value)}
                       onBlur={stopEditing}
                       onKeyDown={(event) => {
                         if (event.key === "Enter") {
-                          saveEditedHp(combatant);
+                          saveEditedField(combatant);
                         }
                         if (event.key === "Escape") {
                           stopEditing();
@@ -159,14 +219,14 @@ export default function InitiativeList({
                     <input
                       type="number"
                       min={1}
-                      value={draftHp}
+                      value={draftValue}
                       autoFocus
                       className="h-8 w-16 rounded border border-slate-700 bg-slate-950 px-1 text-center text-sm"
-                      onChange={(event) => setDraftHp(event.target.value)}
+                      onChange={(event) => setDraftValue(event.target.value)}
                       onBlur={stopEditing}
                       onKeyDown={(event) => {
                         if (event.key === "Enter") {
-                          saveEditedHp(combatant);
+                          saveEditedField(combatant);
                         }
                         if (event.key === "Escape") {
                           stopEditing();
@@ -183,20 +243,6 @@ export default function InitiativeList({
                     </button>
                   )}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => onUpdateHp(combatant.id, +1)}
-                  className="rounded bg-sky-700 px-2 py-1 text-sm hover:bg-sky-600"
-                >
-                  +1
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onUpdateHp(combatant.id, +5)}
-                  className="rounded bg-sky-700 px-2 py-1 text-sm hover:bg-sky-600"
-                >
-                  +5
-                </button>
               </div>
               <div className="md:col-span-3 flex justify-end gap-2">
                 <button

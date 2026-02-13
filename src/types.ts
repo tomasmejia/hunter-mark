@@ -16,6 +16,7 @@ export type Combatant = {
   id: string;
   name: string;
   type: CombatantType;
+  statBlockUrl?: string;
   maxHp: number;
   currentHp: number;
   ac: number;
@@ -39,6 +40,7 @@ export type Encounter = {
 export type NewCombatantInput = {
   name: string;
   type: CombatantType;
+  statBlockUrl?: string;
   maxHp: number;
   currentHp: number;
   ac: number;

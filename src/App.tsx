@@ -43,10 +43,10 @@ export default function App() {
     addCombatantFromLibrary,
     duplicateCombatant,
     deleteCombatant,
-    updateHp,
     setCurrentHp,
     setMaxHp,
     setAc,
+    setStatBlockUrl,
     previousTurn,
     nextTurn,
     saveActiveEncounter,
@@ -82,6 +82,7 @@ export default function App() {
 
     const baseInput: Omit<NewCombatantInput, "name"> = {
       type: form.type,
+      statBlockUrl: undefined,
       maxHp: Number(form.maxHp),
       currentHp: Number(form.currentHp),
       ac: Number(form.ac),
@@ -142,10 +143,10 @@ export default function App() {
         <InitiativeList
           combatants={orderedCombatants}
           activeCombatantId={activeEncounter.activeCombatantId}
-          onUpdateHp={(combatantId, delta) => void updateHp(combatantId, delta)}
           onSetCurrentHp={(combatantId, nextHp) => void setCurrentHp(combatantId, nextHp)}
           onSetMaxHp={(combatantId, nextHp) => void setMaxHp(combatantId, nextHp)}
           onSetAc={(combatantId, nextAc) => void setAc(combatantId, nextAc)}
+          onSetStatBlockUrl={(combatantId, url) => void setStatBlockUrl(combatantId, url)}
           onDuplicateCombatant={(combatantId) => void duplicateCombatant(combatantId)}
           onDeleteCombatant={(combatantId) => void deleteCombatant(combatantId)}
         />
