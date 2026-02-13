@@ -47,6 +47,7 @@ export default function App() {
     setCurrentHp,
     setMaxHp,
     setAc,
+    setInitiative,
     setStatBlockUrl,
     previousTurn,
     nextTurn,
@@ -150,6 +151,7 @@ export default function App() {
           onSetCurrentHp={(combatantId, nextHp) => void setCurrentHp(combatantId, nextHp)}
           onSetMaxHp={(combatantId, nextHp) => void setMaxHp(combatantId, nextHp)}
           onSetAc={(combatantId, nextAc) => void setAc(combatantId, nextAc)}
+          onSetInitiative={(combatantId, nextInitiative) => void setInitiative(combatantId, nextInitiative)}
           onSetStatBlockUrl={(combatantId, url) => void setStatBlockUrl(combatantId, url)}
           onDuplicateCombatant={(combatantId) => void duplicateCombatant(combatantId)}
           onDeleteCombatant={(combatantId) => void deleteCombatant(combatantId)}

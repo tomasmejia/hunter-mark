@@ -8,6 +8,7 @@ type InitiativeListProps = {
   onSetCurrentHp: (combatantId: string, nextHp: number) => void;
   onSetMaxHp: (combatantId: string, nextHp: number) => void;
   onSetAc: (combatantId: string, nextAc: number) => void;
+  onSetInitiative: (combatantId: string, nextInitiative: number) => void;
   onSetStatBlockUrl: (combatantId: string, url?: string) => void;
   onDuplicateCombatant: (combatantId: string) => void;
   onDeleteCombatant: (combatantId: string) => void;
@@ -20,21 +21,24 @@ export default function InitiativeList({
   onSetCurrentHp,
   onSetMaxHp,
   onSetAc,
+  onSetInitiative,
   onSetStatBlockUrl,
   onDuplicateCombatant,
   onDeleteCombatant,
 }: InitiativeListProps) {
-  const [editing, setEditing] = useState<{ combatantId: string; field: "current" | "max" | "ac" | "url" } | null>(
-    null
-  );
+  const [editing, setEditing] = useState<{
+    combatantId: string;
+    field: "current" | "max" | "ac" | "init" | "url";
+  } | null>(null);
   const [draftValue, setDraftValue] = useState("");
   const [hpModifierEditor, setHpModifierEditor] = useState<{ combatantId: string; mode: "add" | "sub" } | null>(
     null
   );
   const [hpModifierValue, setHpModifierValue] = useState("");
   const hpModifierPopoverRef = useRef<HTMLDivElement | null>(null);
+  const urlPopoverRef = useRef<HTMLDivElement | null>(null);
 
-  const startEditing = (combatant: Combatant, field: "current" | "max" | "ac" | "url") => {
+  const startEditing = (combatant: Combatant, field: "current" | "max" | "ac" | "init" | "url") => {
     setEditing({ combatantId: combatant.id, field });
     if (field === "current") {
       setDraftValue(String(combatant.currentHp));
@@ -46,6 +50,10 @@ export default function InitiativeList({
     }
     if (field === "ac") {
       setDraftValue(String(combatant.ac));
+      return;
+    }
+    if (field === "init") {
+      setDraftValue(String(combatant.initiative));
       return;
     }
     setDraftValue(combatant.statBlockUrl ?? "");
@@ -78,6 +86,8 @@ export default function InitiativeList({
 
     if (editing?.field === "ac") {
       onSetAc(combatant.id, parsed);
+    } else if (editing?.field === "init") {
+      onSetInitiative(combatant.id, parsed);
     } else if (editing?.field === "max") {
       onSetMaxHp(combatant.id, parsed);
     } else {
@@ -138,6 +148,26 @@ export default function InitiativeList({
     };
   }, [hpModifierEditor]);
 
+  useEffect(() => {
+    if (!editing || editing.field !== "url") {
+      return;
+    }
+
+    const handleMouseDown = (event: MouseEvent) => {
+      if (!urlPopoverRef.current) {
+        return;
+      }
+      if (!urlPopoverRef.current.contains(event.target as Node)) {
+        stopEditing();
+      }
+    };
+
+    document.addEventListener("mousedown", handleMouseDown);
+    return () => {
+      document.removeEventListener("mousedown", handleMouseDown);
+    };
+  }, [editing]);
+
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-900 p-4">
       <h2 className="mb-3 text-lg font-semibold">Initiative Order</h2>
@@ -187,35 +217,20 @@ export default function InitiativeList({
                     {combatant.name}
                   </p>
                 )}
-                <p className="text-xs uppercase text-slate-400">
-                  {editing?.combatantId === combatant.id && editing.field === "url" ? (
-                    <input
-                      type="url"
-                      value={draftValue}
-                      autoFocus
-                      placeholder="https://..."
-                      className="h-6 w-36 rounded border border-slate-700 bg-slate-950 px-1 text-xs text-slate-100 normal-case"
-                      onChange={(event) => setDraftValue(event.target.value)}
-                      onBlur={stopEditing}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          saveEditedField(combatant);
-                        }
-                        if (event.key === "Escape") {
-                          stopEditing();
-                        }
-                      }}
-                    />
-                  ) : (
+                <div className="relative">
+                  <p className="flex items-center gap-1 text-xs uppercase text-slate-400">
+                    <span>{combatant.type}</span>
                     <button
                       type="button"
+                      aria-label={`Edit ${combatant.name} URL`}
                       onClick={() => startEditing(combatant, "url")}
-                      className="rounded text-xs text-slate-100 underline decoration-dotted underline-offset-2 normal-case hover:text-slate-300"
+                      className="rounded p-0.5 text-slate-300 hover:bg-slate-800 hover:text-slate-100"
                     >
-                      {combatant.type.toUpperCase()}
+                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current" aria-hidden="true">
+                        <path d="M3 17.25V21h3.75l11-11-3.75-3.75-11 11zM20.71 7.04a1 1 0 0 0 0-1.41L18.37 3.29a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                      </svg>
                     </button>
-                  )}{" "}
-                  | AC{" "}
+                    <span>| AC</span>
                   {editing?.combatantId === combatant.id && editing.field === "ac" ? (
                     <input
                       type="number"
@@ -238,13 +253,64 @@ export default function InitiativeList({
                     <button
                       type="button"
                       onClick={() => startEditing(combatant, "ac")}
-                      className="rounded px-1 text-xs text-slate-100 underline decoration-dotted underline-offset-2 normal-case hover:text-slate-300"
+                      className="rounded text-xs text-slate-100 underline decoration-dotted underline-offset-2 normal-case hover:text-slate-300"
                     >
                       {combatant.ac}
                     </button>
                   )}
-                  | Init {combatant.initiative}
-                </p>
+                    <span>| Init</span>
+                    {editing?.combatantId === combatant.id && editing.field === "init" ? (
+                      <input
+                        type="number"
+                        value={draftValue}
+                        autoFocus
+                        className="h-6 w-14 rounded border border-slate-700 bg-slate-950 px-1 text-center text-xs text-slate-100 normal-case"
+                        onChange={(event) => setDraftValue(event.target.value)}
+                        onBlur={stopEditing}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            saveEditedField(combatant);
+                          }
+                          if (event.key === "Escape") {
+                            stopEditing();
+                          }
+                        }}
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => startEditing(combatant, "init")}
+                        className="rounded text-xs text-slate-100 underline decoration-dotted underline-offset-2 normal-case hover:text-slate-300"
+                      >
+                        {combatant.initiative}
+                      </button>
+                    )}
+                  </p>
+                  {editing?.combatantId === combatant.id && editing.field === "url" ? (
+                    <div
+                      ref={urlPopoverRef}
+                      className="absolute left-0 top-6 z-20 w-56 rounded-md border border-slate-700 bg-slate-900 p-3 shadow-lg"
+                    >
+                      <p className="mb-1 text-xs text-slate-300 normal-case">Stat block / sheet URL</p>
+                      <input
+                        type="url"
+                        value={draftValue}
+                        autoFocus
+                        placeholder="https://..."
+                        className="h-8 w-full rounded border border-slate-700 bg-slate-950 px-2 text-xs text-slate-100 normal-case"
+                        onChange={(event) => setDraftValue(event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            saveEditedField(combatant);
+                          }
+                          if (event.key === "Escape") {
+                            stopEditing();
+                          }
+                        }}
+                      />
+                    </div>
+                  ) : null}
+                </div>
               </div>
               <div className="md:col-span-5 flex items-center gap-2">
                 <div className="relative flex items-center gap-2">
@@ -316,7 +382,7 @@ export default function InitiativeList({
                     <button
                       type="button"
                       onClick={() => startEditing(combatant, "current")}
-                      className="rounded px-1 text-sm text-slate-100 underline decoration-dotted underline-offset-2 hover:text-slate-300"
+                      className="rounded text-sm text-slate-100 underline decoration-dotted underline-offset-2 hover:text-slate-300"
                     >
                       {combatant.currentHp}
                     </button>
@@ -344,7 +410,7 @@ export default function InitiativeList({
                     <button
                       type="button"
                       onClick={() => startEditing(combatant, "max")}
-                      className="rounded px-1 text-sm text-slate-100 underline decoration-dotted underline-offset-2 hover:text-slate-300"
+                      className="rounded text-sm text-slate-100 underline decoration-dotted underline-offset-2 hover:text-slate-300"
                     >
                       {combatant.maxHp}
                     </button>
