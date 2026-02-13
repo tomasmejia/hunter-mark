@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Combatant } from "../types";
 
 type InitiativeListProps = {
   combatants: Combatant[];
   activeCombatantId: string | null;
+  onUpdateHp: (combatantId: string, delta: number) => void;
   onSetCurrentHp: (combatantId: string, nextHp: number) => void;
   onSetMaxHp: (combatantId: string, nextHp: number) => void;
   onSetAc: (combatantId: string, nextAc: number) => void;
@@ -15,6 +16,7 @@ type InitiativeListProps = {
 export default function InitiativeList({
   combatants,
   activeCombatantId,
+  onUpdateHp,
   onSetCurrentHp,
   onSetMaxHp,
   onSetAc,
@@ -26,6 +28,11 @@ export default function InitiativeList({
     null
   );
   const [draftValue, setDraftValue] = useState("");
+  const [hpModifierEditor, setHpModifierEditor] = useState<{ combatantId: string; mode: "add" | "sub" } | null>(
+    null
+  );
+  const [hpModifierValue, setHpModifierValue] = useState("");
+  const hpModifierPopoverRef = useRef<HTMLDivElement | null>(null);
 
   const startEditing = (combatant: Combatant, field: "current" | "max" | "ac" | "url") => {
     setEditing({ combatantId: combatant.id, field });
@@ -79,6 +86,58 @@ export default function InitiativeList({
     stopEditing();
   };
 
+  const startHpModifierEditing = (combatant: Combatant, mode: "add" | "sub") => {
+    setHpModifierEditor({ combatantId: combatant.id, mode });
+    setHpModifierValue("");
+  };
+
+  const stopHpModifierEditing = () => {
+    setHpModifierEditor(null);
+    setHpModifierValue("");
+  };
+
+  const applyHpModifier = (combatant: Combatant) => {
+    if (!hpModifierEditor || hpModifierEditor.combatantId !== combatant.id) {
+      return;
+    }
+
+    const parsed = Number(hpModifierValue);
+    if (!Number.isFinite(parsed)) {
+      stopHpModifierEditing();
+      return;
+    }
+
+    const magnitude = Math.floor(Math.abs(parsed));
+    if (magnitude <= 0) {
+      stopHpModifierEditing();
+      return;
+    }
+
+    const delta = hpModifierEditor.mode === "sub" ? -magnitude : magnitude;
+    onUpdateHp(combatant.id, delta);
+    stopHpModifierEditing();
+  };
+
+  useEffect(() => {
+    if (!hpModifierEditor) {
+      return;
+    }
+
+    const handleMouseDown = (event: MouseEvent) => {
+      if (!hpModifierPopoverRef.current) {
+        return;
+      }
+      if (!hpModifierPopoverRef.current.contains(event.target as Node)) {
+        stopHpModifierEditing();
+      }
+    };
+
+    document.addEventListener("mousedown", handleMouseDown);
+    return () => {
+      document.removeEventListener("mousedown", handleMouseDown);
+    };
+  }, [hpModifierEditor]);
+
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-900 p-4">
       <h2 className="mb-3 text-lg font-semibold">Initiative Order</h2>
@@ -91,7 +150,11 @@ export default function InitiativeList({
               key={combatant.id}
               className={`grid gap-2 rounded-md border p-3 md:grid-cols-12 ${
                 combatant.id === activeCombatantId
-                  ? "border-emerald-500 bg-emerald-950/40"
+                  ? combatant.type === "monster"
+                    ? "border-rose-500 bg-rose-950/40"
+                    : combatant.type === "npc"
+                      ? "border-amber-500 bg-amber-950/40"
+                      : "border-emerald-500 bg-emerald-950/40"
                   : "border-slate-700 bg-slate-950/40"
               }`}
             >
@@ -184,6 +247,50 @@ export default function InitiativeList({
                 </p>
               </div>
               <div className="md:col-span-5 flex items-center gap-2">
+                <div className="relative flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => startHpModifierEditing(combatant, "sub")}
+                    className="h-8 w-8 rounded bg-rose-700 text-sm font-semibold hover:bg-rose-600"
+                    aria-label={`Subtract HP from ${combatant.name}`}
+                  >
+                    -
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => startHpModifierEditing(combatant, "add")}
+                    className="h-8 w-8 rounded bg-emerald-700 text-sm font-semibold hover:bg-emerald-600"
+                    aria-label={`Add HP to ${combatant.name}`}
+                  >
+                    +
+                  </button>
+                  {hpModifierEditor?.combatantId === combatant.id ? (
+                    <div
+                      ref={hpModifierPopoverRef}
+                      className="absolute left-0 top-10 z-20 w-40 rounded-md border border-slate-700 bg-slate-900 p-3 shadow-lg"
+                    >
+                      <p className="mb-1 text-xs text-slate-300">
+                        {hpModifierEditor.mode === "sub" ? "Damage" : "Healing"}
+                      </p>
+                      <input
+                        type="number"
+                        min={1}
+                        value={hpModifierValue}
+                        autoFocus
+                        className="h-8 w-full rounded border border-slate-700 bg-slate-950 px-2 text-center text-sm"
+                        onChange={(event) => setHpModifierValue(event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            applyHpModifier(combatant);
+                          }
+                          if (event.key === "Escape") {
+                            stopHpModifierEditing();
+                          }
+                        }}
+                      />
+                    </div>
+                  ) : null}
+                </div>
                 <div className="flex items-center gap-1 text-sm">
                   <span>HP</span>
                   {editing?.combatantId === combatant.id && editing.field === "current" ? (

@@ -43,6 +43,7 @@ export default function App() {
     addCombatantFromLibrary,
     duplicateCombatant,
     deleteCombatant,
+    updateHp,
     setCurrentHp,
     setMaxHp,
     setAc,
@@ -103,8 +104,9 @@ export default function App() {
     nameInputRef.current?.focus();
   };
 
-  const activeLabel =
-    orderedCombatants.find((combatant) => combatant.id === activeEncounter.activeCombatantId)?.name ?? "None";
+  const activeCombatant =
+    orderedCombatants.find((combatant) => combatant.id === activeEncounter.activeCombatantId) ?? null;
+  const activeLabel = activeCombatant?.name ?? "None";
   const firstInitiativeCombatantId = orderedCombatants[0]?.id ?? null;
   const isPreviousTurnDisabled =
     orderedCombatants.length === 0 ||
@@ -124,6 +126,7 @@ export default function App() {
         <HeaderBar
           round={activeEncounter.round}
           activeLabel={activeLabel}
+          activeType={activeCombatant?.type ?? null}
           encounterName={encounterName}
           onEncounterNameChange={setEncounterName}
           onPreviousTurn={() => void previousTurn()}
@@ -143,6 +146,7 @@ export default function App() {
         <InitiativeList
           combatants={orderedCombatants}
           activeCombatantId={activeEncounter.activeCombatantId}
+          onUpdateHp={(combatantId, delta) => void updateHp(combatantId, delta)}
           onSetCurrentHp={(combatantId, nextHp) => void setCurrentHp(combatantId, nextHp)}
           onSetMaxHp={(combatantId, nextHp) => void setMaxHp(combatantId, nextHp)}
           onSetAc={(combatantId, nextAc) => void setAc(combatantId, nextAc)}

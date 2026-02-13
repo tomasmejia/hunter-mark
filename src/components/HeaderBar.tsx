@@ -1,8 +1,10 @@
 import type { ChangeEvent } from "react";
+import type { CombatantType } from "../types";
 
 type HeaderBarProps = {
   round: number;
   activeLabel: string;
+  activeType: CombatantType | null;
   encounterName: string;
   onEncounterNameChange: (value: string) => void;
   onPreviousTurn: () => void;
@@ -15,6 +17,7 @@ type HeaderBarProps = {
 export default function HeaderBar({
   round,
   activeLabel,
+  activeType,
   encounterName,
   onEncounterNameChange,
   onPreviousTurn,
@@ -26,13 +29,21 @@ export default function HeaderBar({
   const handleEncounterNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     onEncounterNameChange(event.target.value);
   };
+  const activePillClass =
+    activeType === "monster"
+      ? "bg-rose-900/70 text-rose-200"
+      : activeType === "npc"
+        ? "bg-amber-900/70 text-amber-200"
+        : activeType === "player"
+          ? "bg-emerald-900/70 text-emerald-200"
+          : "bg-slate-800 text-slate-200";
 
   return (
     <header className="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-3">
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-bold">Hunter Mark</h1>
         <span className="text-xs rounded-full bg-slate-800 px-2 py-1">Round {round}</span>
-        <span className="text-xs rounded-full bg-slate-800 px-2 py-1">Active: {activeLabel}</span>
+        <span className={`text-xs rounded-full px-2 py-1 ${activePillClass}`}>Active: {activeLabel}</span>
         <button
           type="button"
           onClick={onPreviousTurn}
