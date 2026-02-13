@@ -8,7 +8,12 @@ export const createCombatantActions = (
   get: StoreGet
 ): Pick<
   AppStore,
-  "addCombatant" | "addCombatantFromLibrary" | "duplicateCombatant" | "deleteCombatant" | "updateHp"
+  | "addCombatant"
+  | "addCombatantFromLibrary"
+  | "duplicateCombatant"
+  | "deleteCombatant"
+  | "updateHp"
+  | "setCurrentHp"
 > => ({
   addCombatant: async (input, options) => {
     const current = get().activeEncounter;
@@ -127,6 +132,29 @@ export const createCombatantActions = (
       return {
         ...combatant,
         currentHp: nextHp,
+        updatedAt: nowIso(),
+      };
+    });
+
+    const nextEncounter: Encounter = {
+      ...current,
+      combatants: nextCombatants,
+      updatedAt: nowIso(),
+    };
+    set({ activeEncounter: nextEncounter });
+    await persistEncounter(nextEncounter);
+  },
+
+  setCurrentHp: async (combatantId, nextHp) => {
+    const current = get().activeEncounter;
+    const nextCombatants = current.combatants.map((combatant) => {
+      if (combatant.id !== combatantId) {
+        return combatant;
+      }
+      const clampedHp = Math.max(0, Math.min(combatant.maxHp, Math.floor(nextHp)));
+      return {
+        ...combatant,
+        currentHp: clampedHp,
         updatedAt: nowIso(),
       };
     });

@@ -1,9 +1,11 @@
+import { useState } from "react";
 import type { Combatant } from "../types";
 
 type InitiativeListProps = {
   combatants: Combatant[];
   activeCombatantId: string | null;
   onUpdateHp: (combatantId: string, delta: number) => void;
+  onSetCurrentHp: (combatantId: string, nextHp: number) => void;
   onDuplicateCombatant: (combatantId: string) => void;
   onDeleteCombatant: (combatantId: string) => void;
 };
@@ -12,9 +14,33 @@ export default function InitiativeList({
   combatants,
   activeCombatantId,
   onUpdateHp,
+  onSetCurrentHp,
   onDuplicateCombatant,
   onDeleteCombatant,
 }: InitiativeListProps) {
+  const [editingCombatantId, setEditingCombatantId] = useState<string | null>(null);
+  const [draftHp, setDraftHp] = useState("");
+
+  const startEditing = (combatant: Combatant) => {
+    setEditingCombatantId(combatant.id);
+    setDraftHp(String(combatant.currentHp));
+  };
+
+  const stopEditing = () => {
+    setEditingCombatantId(null);
+    setDraftHp("");
+  };
+
+  const saveEditedHp = (combatant: Combatant) => {
+    const parsed = Number(draftHp);
+    if (!Number.isFinite(parsed)) {
+      stopEditing();
+      return;
+    }
+    onSetCurrentHp(combatant.id, parsed);
+    stopEditing();
+  };
+
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-900 p-4">
       <h2 className="mb-3 text-lg font-semibold">Initiative Order</h2>
@@ -52,9 +78,38 @@ export default function InitiativeList({
                 >
                   -1
                 </button>
-                <p className="min-w-24 text-center text-sm">
-                  HP {combatant.currentHp}/{combatant.maxHp}
-                </p>
+                <div className="flex items-center gap-1 text-sm">
+                  <span>HP</span>
+                  {editingCombatantId === combatant.id ? (
+                    <input
+                      type="number"
+                      min={0}
+                      max={combatant.maxHp}
+                      value={draftHp}
+                      autoFocus
+                      className="h-8 w-16 rounded border border-slate-700 bg-slate-950 px-1 text-center text-sm"
+                      onChange={(event) => setDraftHp(event.target.value)}
+                      onBlur={stopEditing}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          saveEditedHp(combatant);
+                        }
+                        if (event.key === "Escape") {
+                          stopEditing();
+                        }
+                      }}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => startEditing(combatant)}
+                      className="rounded px-1 text-sm text-slate-100 underline decoration-dotted underline-offset-2 hover:text-slate-300"
+                    >
+                      {combatant.currentHp}
+                    </button>
+                  )}
+                  <span>/ {combatant.maxHp}</span>
+                </div>
                 <button
                   type="button"
                   onClick={() => onUpdateHp(combatant.id, +1)}

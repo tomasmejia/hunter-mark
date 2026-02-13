@@ -20,6 +20,7 @@ export type AppStoreActions = {
   duplicateCombatant: (combatantId: string, count?: number) => Promise<void>;
   deleteCombatant: (combatantId: string) => Promise<void>;
   updateHp: (combatantId: string, delta: number) => Promise<void>;
+  setCurrentHp: (combatantId: string, nextHp: number) => Promise<void>;
   nextTurn: () => Promise<void>;
   saveActiveEncounter: (name?: string) => Promise<void>;
   loadEncounter: (encounterId: string) => void;

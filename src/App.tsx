@@ -44,6 +44,7 @@ export default function App() {
     duplicateCombatant,
     deleteCombatant,
     updateHp,
+    setCurrentHp,
     nextTurn,
     saveActiveEncounter,
     loadEncounter,
@@ -133,6 +134,7 @@ export default function App() {
           combatants={orderedCombatants}
           activeCombatantId={activeEncounter.activeCombatantId}
           onUpdateHp={(combatantId, delta) => void updateHp(combatantId, delta)}
+          onSetCurrentHp={(combatantId, nextHp) => void setCurrentHp(combatantId, nextHp)}
           onDuplicateCombatant={(combatantId) => void duplicateCombatant(combatantId)}
           onDeleteCombatant={(combatantId) => void deleteCombatant(combatantId)}
         />
