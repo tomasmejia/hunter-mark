@@ -171,11 +171,11 @@ export default function InitiativeList({
   }, [editing]);
 
   return (
-    <section className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-      <h2 className="mb-3 text-lg font-semibold">Initiative Order</h2>
+    <section className="rounded-xl border border-amber-900/50 bg-[#241a14]/95 p-4 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+      <h2 className="mb-3 text-lg font-semibold text-amber-100">Initiative Order</h2>
       <div className="space-y-2">
         {combatants.length === 0 ? (
-          <p className="text-sm text-slate-400">No combatants yet.</p>
+          <p className="text-sm text-amber-200/70">No combatants yet.</p>
         ) : (
           combatants.map((combatant) => (
             <article
@@ -183,13 +183,13 @@ export default function InitiativeList({
               className={`grid gap-2 rounded-md border p-3 md:grid-cols-12 ${
                 combatant.id === activeCombatantId
                   ? combatant.currentHp <= 0
-                    ? "border-stone-500 bg-stone-900/40"
+                    ? "border-stone-500 bg-stone-900/35"
                     : combatant.type === "monster"
-                    ? "border-rose-500 bg-rose-950/40"
+                    ? "border-red-700 bg-red-950/25"
                     : combatant.type === "npc"
-                      ? "border-amber-500 bg-amber-950/40"
-                      : "border-emerald-500 bg-emerald-950/40"
-                  : "border-slate-700 bg-slate-950/40"
+                      ? "border-yellow-700 bg-yellow-950/25"
+                      : "border-lime-700 bg-lime-950/25"
+                  : "border-amber-900/35 bg-[#1b130f]"
               }`}
             >
               <div className="md:col-span-4">
@@ -200,10 +200,10 @@ export default function InitiativeList({
                     rel="noreferrer noopener"
                     className={`font-semibold hover:underline ${
                       combatant.type === "monster"
-                        ? "text-rose-300 hover:text-rose-200"
+                        ? "text-red-200 hover:text-red-100"
                         : combatant.type === "player"
-                          ? "text-emerald-300 hover:text-emerald-200"
-                        : "text-amber-300 hover:text-amber-200"
+                          ? "text-lime-200 hover:text-lime-100"
+                        : "text-yellow-200 hover:text-yellow-100"
                     }`}
                   >
                     {combatant.name}
@@ -213,10 +213,10 @@ export default function InitiativeList({
                   <p
                     className={`font-semibold ${
                       combatant.type === "player"
-                        ? "text-emerald-300"
+                        ? "text-lime-200"
                         : combatant.type === "npc"
-                          ? "text-amber-300"
-                          : "text-rose-300"
+                          ? "text-yellow-200"
+                          : "text-red-200"
                     }`}
                   >
                     {combatant.name}
@@ -224,13 +224,13 @@ export default function InitiativeList({
                   </p>
                 )}
                 <div className="relative">
-                  <p className="flex items-center gap-1 text-xs uppercase text-slate-400">
+                  <p className="flex items-center gap-1 text-xs uppercase text-amber-100/65">
                     <span>{combatant.type}</span>
                     <button
                       type="button"
                       aria-label={`Edit ${combatant.name} URL`}
                       onClick={() => startEditing(combatant, "url")}
-                      className="rounded p-0.5 text-slate-300 hover:bg-slate-800 hover:text-slate-100"
+                      className="rounded p-0.5 text-amber-100/70 hover:bg-[#3a2a1f] hover:text-amber-50"
                     >
                       <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current" aria-hidden="true">
                         <path d="M3 17.25V21h3.75l11-11-3.75-3.75-11 11zM20.71 7.04a1 1 0 0 0 0-1.41L18.37 3.29a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
@@ -243,7 +243,7 @@ export default function InitiativeList({
                       min={0}
                       value={draftValue}
                       autoFocus
-                      className="h-6 w-14 rounded border border-slate-700 bg-slate-950 px-1 text-center text-xs text-slate-100 normal-case"
+                      className="h-6 w-14 rounded border border-amber-900/40 bg-[#1b130f] px-1 text-center text-xs text-amber-100 normal-case"
                       onChange={(event) => setDraftValue(event.target.value)}
                       onBlur={stopEditing}
                       onKeyDown={(event) => {
@@ -259,7 +259,7 @@ export default function InitiativeList({
                     <button
                       type="button"
                       onClick={() => startEditing(combatant, "ac")}
-                      className="rounded text-xs text-slate-100 underline decoration-dotted underline-offset-2 normal-case hover:text-slate-300"
+                      className="rounded text-xs text-amber-100 underline decoration-dotted underline-offset-2 normal-case hover:text-amber-200"
                     >
                       {combatant.ac}
                     </button>
@@ -270,7 +270,7 @@ export default function InitiativeList({
                         type="number"
                         value={draftValue}
                         autoFocus
-                        className="h-6 w-14 rounded border border-slate-700 bg-slate-950 px-1 text-center text-xs text-slate-100 normal-case"
+                        className="h-6 w-14 rounded border border-amber-900/40 bg-[#1b130f] px-1 text-center text-xs text-amber-100 normal-case"
                         onChange={(event) => setDraftValue(event.target.value)}
                         onBlur={stopEditing}
                         onKeyDown={(event) => {
@@ -286,7 +286,7 @@ export default function InitiativeList({
                       <button
                         type="button"
                         onClick={() => startEditing(combatant, "init")}
-                        className="rounded text-xs text-slate-100 underline decoration-dotted underline-offset-2 normal-case hover:text-slate-300"
+                        className="rounded text-xs text-amber-100 underline decoration-dotted underline-offset-2 normal-case hover:text-amber-200"
                       >
                         {combatant.initiative}
                       </button>
@@ -295,15 +295,15 @@ export default function InitiativeList({
                   {editing?.combatantId === combatant.id && editing.field === "url" ? (
                     <div
                       ref={urlPopoverRef}
-                      className="absolute left-0 top-6 z-20 w-56 rounded-md border border-slate-700 bg-slate-900 p-3 shadow-lg"
+                      className="absolute left-0 top-6 z-20 w-56 rounded-md border border-amber-900/45 bg-[#241a14] p-3 shadow-lg"
                     >
-                      <p className="mb-1 text-xs text-slate-300 normal-case">Stat block / sheet URL</p>
+                      <p className="mb-1 text-xs text-amber-200/80 normal-case">Stat block / sheet URL</p>
                       <input
                         type="url"
                         value={draftValue}
                         autoFocus
                         placeholder="https://..."
-                        className="h-8 w-full rounded border border-slate-700 bg-slate-950 px-2 text-xs text-slate-100 normal-case"
+                        className="h-8 w-full rounded border border-amber-900/40 bg-[#1b130f] px-2 text-xs text-amber-100 normal-case"
                         onChange={(event) => setDraftValue(event.target.value)}
                         onKeyDown={(event) => {
                           if (event.key === "Enter") {
@@ -323,7 +323,7 @@ export default function InitiativeList({
                   <button
                     type="button"
                     onClick={() => startHpModifierEditing(combatant, "sub")}
-                    className="h-8 w-8 rounded bg-rose-700 text-sm font-semibold hover:bg-rose-600"
+                    className="h-8 w-8 rounded bg-red-800 text-sm font-semibold text-red-100 hover:bg-red-700"
                     aria-label={`Subtract HP from ${combatant.name}`}
                   >
                     -
@@ -331,7 +331,7 @@ export default function InitiativeList({
                   <button
                     type="button"
                     onClick={() => startHpModifierEditing(combatant, "add")}
-                    className="h-8 w-8 rounded bg-emerald-700 text-sm font-semibold hover:bg-emerald-600"
+                    className="h-8 w-8 rounded bg-lime-800 text-sm font-semibold text-lime-100 hover:bg-lime-700"
                     aria-label={`Add HP to ${combatant.name}`}
                   >
                     +
@@ -339,9 +339,9 @@ export default function InitiativeList({
                   {hpModifierEditor?.combatantId === combatant.id ? (
                     <div
                       ref={hpModifierPopoverRef}
-                      className="absolute left-0 top-10 z-20 w-40 rounded-md border border-slate-700 bg-slate-900 p-3 shadow-lg"
+                      className="absolute left-0 top-10 z-20 w-40 rounded-md border border-amber-900/45 bg-[#241a14] p-3 shadow-lg"
                     >
-                      <p className="mb-1 text-xs text-slate-300">
+                      <p className="mb-1 text-xs text-amber-200/80">
                         {hpModifierEditor.mode === "sub" ? "Damage" : "Healing"}
                       </p>
                       <input
@@ -349,7 +349,7 @@ export default function InitiativeList({
                         min={1}
                         value={hpModifierValue}
                         autoFocus
-                        className="h-8 w-full rounded border border-slate-700 bg-slate-950 px-2 text-center text-sm"
+                        className="h-8 w-full rounded border border-amber-900/40 bg-[#1b130f] px-2 text-center text-sm text-amber-100"
                         onChange={(event) => setHpModifierValue(event.target.value)}
                         onKeyDown={(event) => {
                           if (event.key === "Enter") {
@@ -363,7 +363,7 @@ export default function InitiativeList({
                     </div>
                   ) : null}
                 </div>
-                <div className="flex items-center gap-1 text-sm">
+                <div className="flex items-center gap-1 text-sm text-amber-100">
                   <span>HP</span>
                   {editing?.combatantId === combatant.id && editing.field === "current" ? (
                     <input
@@ -372,7 +372,7 @@ export default function InitiativeList({
                       max={combatant.maxHp}
                       value={draftValue}
                       autoFocus
-                      className="h-8 w-16 rounded border border-slate-700 bg-slate-950 px-1 text-center text-sm"
+                      className="h-8 w-16 rounded border border-amber-900/40 bg-[#1b130f] px-1 text-center text-sm text-amber-100"
                       onChange={(event) => setDraftValue(event.target.value)}
                       onBlur={stopEditing}
                       onKeyDown={(event) => {
@@ -388,7 +388,7 @@ export default function InitiativeList({
                     <button
                       type="button"
                       onClick={() => startEditing(combatant, "current")}
-                      className="rounded text-sm text-slate-100 underline decoration-dotted underline-offset-2 hover:text-slate-300"
+                      className="rounded text-sm text-amber-100 underline decoration-dotted underline-offset-2 hover:text-amber-200"
                     >
                       {combatant.currentHp}
                     </button>
@@ -400,7 +400,7 @@ export default function InitiativeList({
                       min={1}
                       value={draftValue}
                       autoFocus
-                      className="h-8 w-16 rounded border border-slate-700 bg-slate-950 px-1 text-center text-sm"
+                      className="h-8 w-16 rounded border border-amber-900/40 bg-[#1b130f] px-1 text-center text-sm text-amber-100"
                       onChange={(event) => setDraftValue(event.target.value)}
                       onBlur={stopEditing}
                       onKeyDown={(event) => {
@@ -416,7 +416,7 @@ export default function InitiativeList({
                     <button
                       type="button"
                       onClick={() => startEditing(combatant, "max")}
-                      className="rounded text-sm text-slate-100 underline decoration-dotted underline-offset-2 hover:text-slate-300"
+                      className="rounded text-sm text-amber-100 underline decoration-dotted underline-offset-2 hover:text-amber-200"
                     >
                       {combatant.maxHp}
                     </button>
@@ -427,21 +427,21 @@ export default function InitiativeList({
                 <button
                   type="button"
                   onClick={() => onSaveCombatantToLibrary(combatant.id)}
-                  className="rounded bg-indigo-700 px-3 py-2 text-sm hover:bg-indigo-600"
+                  className="rounded bg-[#51633f] px-3 py-2 text-sm text-amber-50 hover:bg-[#5f7449]"
                 >
                   Save
                 </button>
                 <button
                   type="button"
                   onClick={() => onDuplicateCombatant(combatant.id)}
-                  className="rounded bg-slate-700 px-3 py-2 text-sm hover:bg-slate-600"
+                  className="rounded bg-[#4a3a2d] px-3 py-2 text-sm text-amber-50 hover:bg-[#5a4939]"
                 >
                   Duplicate
                 </button>
                 <button
                   type="button"
                   onClick={() => onDeleteCombatant(combatant.id)}
-                  className="rounded bg-rose-700 px-3 py-2 text-sm hover:bg-rose-600"
+                  className="rounded bg-red-800 px-3 py-2 text-sm text-red-100 hover:bg-red-700"
                 >
                   Delete
                 </button>

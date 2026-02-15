@@ -116,14 +116,14 @@ export default function App() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-slate-950 text-slate-100 p-6">
+      <main className="min-h-screen p-6 text-amber-50">
         <p>Loading encounter data...</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
+    <main className="min-h-screen text-amber-50">
       <div className="mx-auto max-w-6xl p-4 md:p-6 space-y-4">
         <HeaderBar
           round={activeEncounter.round}

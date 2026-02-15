@@ -32,25 +32,25 @@ export default function AddCombatantForm({ form, nameInputRef, onSubmit, onChang
   };
 
   return (
-    <section className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-      <h2 className="mb-3 text-lg font-semibold">Add Combatant</h2>
+    <section className="rounded-xl border border-amber-900/50 bg-[#241a14]/95 p-4 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+      <h2 className="mb-3 text-lg font-semibold text-amber-100">Add Combatant</h2>
       <form onSubmit={onSubmit} className="grid gap-2 md:grid-cols-7">
         <label className="md:col-span-2">
-          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">Name</span>
+          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-amber-200">Name</span>
           <input
             ref={nameInputRef}
             value={form.name}
             onChange={handleField("name")}
             placeholder="Goblin x4"
-            className="w-full rounded-md border border-slate-700 bg-slate-950 px-2 py-2"
+            className="w-full rounded-md border border-amber-900/40 bg-[#1b130f] px-2 py-2 text-amber-100 placeholder:text-stone-500"
           />
         </label>
         <label>
-          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">Type</span>
+          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-amber-200">Type</span>
           <select
             value={form.type}
             onChange={handleTypeChange}
-            className="h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-2"
+            className="h-10 w-full rounded-md border border-amber-900/40 bg-[#1b130f] px-2 text-amber-100"
           >
             <option value="player">Player</option>
             <option value="npc">NPC</option>
@@ -58,48 +58,48 @@ export default function AddCombatantForm({ form, nameInputRef, onSubmit, onChang
           </select>
         </label>
         <label>
-          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">Max HP</span>
+          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-amber-200">Max HP</span>
           <input
             value={form.maxHp}
             onChange={handleField("maxHp")}
             inputMode="numeric"
-            className="w-full rounded-md border border-slate-700 bg-slate-950 px-2 py-2"
+            className="w-full rounded-md border border-amber-900/40 bg-[#1b130f] px-2 py-2 text-amber-100"
           />
         </label>
         <label>
-          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">Current HP</span>
+          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-amber-200">Current HP</span>
           <input
             value={form.currentHp}
             onChange={handleField("currentHp")}
             inputMode="numeric"
-            className="w-full rounded-md border border-slate-700 bg-slate-950 px-2 py-2"
+            className="w-full rounded-md border border-amber-900/40 bg-[#1b130f] px-2 py-2 text-amber-100"
           />
         </label>
         <label>
-          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">AC</span>
+          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-amber-200">AC</span>
           <input
             value={form.ac}
             onChange={handleField("ac")}
             inputMode="numeric"
-            className="w-full rounded-md border border-slate-700 bg-slate-950 px-2 py-2"
+            className="w-full rounded-md border border-amber-900/40 bg-[#1b130f] px-2 py-2 text-amber-100"
           />
         </label>
         <label>
-          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">Initiative</span>
+          <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-amber-200">Initiative</span>
           <input
             value={form.initiative}
             onChange={handleField("initiative")}
             inputMode="numeric"
-            className="w-full rounded-md border border-slate-700 bg-slate-950 px-2 py-2"
+            className="w-full rounded-md border border-amber-900/40 bg-[#1b130f] px-2 py-2 text-amber-100"
           />
         </label>
-        <label className="md:col-span-3 inline-flex items-center gap-2 text-sm text-slate-300">
+        <label className="md:col-span-3 inline-flex items-center gap-2 text-sm text-amber-200">
           <input type="checkbox" checked={form.saveToLibrary} onChange={handleSaveToLibraryChange} />
           Save to library
         </label>
         <button
           type="submit"
-          className="rounded-md bg-amber-500 px-3 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-400 md:col-span-2"
+          className="md:col-span-2 rounded-md bg-[#7a4e1d] px-3 py-2 text-sm font-semibold text-amber-50 hover:bg-[#8b5b23]"
         >
           Add Combatant
         </button>

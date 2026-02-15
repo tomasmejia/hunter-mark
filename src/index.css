@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+:root {
+  color: #f3e6cd;
+  background-color: #17120e;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: #f3e6cd;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(120, 80, 40, 0.18), transparent 45%),
+    radial-gradient(circle at 80% 20%, rgba(60, 90, 40, 0.15), transparent 38%),
+    linear-gradient(180deg, #1d1712 0%, #14100c 100%);
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
