@@ -1,4 +1,5 @@
 import type { ChangeEvent } from "react";
+import { exportJson } from "../db/export";
 import type { CombatantType } from "../types";
 
 type HeaderBarProps = {
@@ -78,6 +79,13 @@ export default function HeaderBar({
           className="rounded-md bg-[#51633f] px-3 py-2 text-sm text-amber-50 hover:bg-[#5f7449]"
         >
           Save Encounter
+        </button>
+        <button
+          type="button"
+          onClick={() => void exportJson()}
+          className="rounded-md bg-[#4a3a2d] px-3 py-2 text-sm text-amber-50 hover:bg-[#5a4939]"
+        >
+          Export JSON
         </button>
         <input
           value={encounterName}
